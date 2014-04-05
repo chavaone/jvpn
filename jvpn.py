@@ -105,7 +105,7 @@ def main():
   if args.host is None:
     exit_with_error("please specify host")
 
-  base = "https://%s/dana-na/auth/url_default/" % args.host
+  base = "https://%s/dana-na/auth/url_4/" % args.host
 
   cookies_file = os.path.join(cache, args.host + ".cookies")
   cookies = http.cookiejar.MozillaCookieJar(cookies_file, delayload=True)
@@ -151,17 +151,17 @@ def main():
   data = fetch(opener, cookies, base + "welcome.cgi")
   print("OK", flush=True)
 
-  if "Please sign in to begin your secure session." in data:
+  if "Por favor, introduza as credenciais corporativas" in data:
 
-    realm = re.search(r'<input type="hidden" name="realm" value="([^"]+)">', data).group(1)
+    realm = re.search(r'<input id="realm_16" type="hidden" name="realm" value="([^"]+)">', data).group(1)
 
     print("Logging in realm '%s'... " % realm, end="", flush=True)
 
-    data = urllib.parse.urlencode({"tz_offset" : "",
+    data = urllib.parse.urlencode({"tz_offset" : "60",
                                    "username"  : args.user,
                                    "password"  : password,
                                    "realm"     : realm,
-                                   "btnSubmit" : "Sign In"})
+                                   "btnSubmit" : "Autenticación"})
     data = fetch(opener, cookies, base + "login.cgi", data)
 
     if "Invalid username or password." in data:
@@ -178,15 +178,17 @@ def main():
     data = fetch(opener, cookies, base + url)
     print("OK", flush=True)
 
-  if "There are already other user sessions in progress" in data:
+  if "You have reached the maximum number" in data:
 
     print("Session already in progress, overriding... ", end="", flush=True)
 
     dsid = re.search(r'<input id="DSIDFormDataStr" type="hidden" name="FormDataStr" value="([^"]+)">', data).group(1)
 
-    data = urllib.parse.urlencode({"btnContinue": "Continue the session",
+    req_data = urllib.parse.urlencode({
+                                   "postfixSID":"ffffffff",
+                                   "btnContinue": "Close Selected Sessions and Log in",
                                    "FormDataStr": dsid})
-    data = fetch(opener, cookies, base + "login.cgi", data)
+    data = fetch(opener, cookies, base + "login.cgi", req_data)
 
     print("OK", flush=True)
 

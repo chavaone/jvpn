@@ -36,7 +36,7 @@ def fetch(opener, cookies, url, data = None):
     req.add_header("Accept-encoding", "gzip")
   elif zlib:
     req.add_header("Accept-encoding", "deflate")
-  
+
   if data:
     data = data.encode("utf-8")
 
@@ -76,7 +76,7 @@ def main():
   home = os.path.join(os.getenv("HOME"), ".juniper_networks")
   if not os.path.isdir(home):
     exit_with_error("Juniper VPN not found in '%s'" % home)
- 
+
   cache = os.path.join(home, "cache")
   if not os.path.isdir(cache):
     os.mkdir(cache)
@@ -212,13 +212,13 @@ def main():
 
   if not dsid:
     exit_with_error("Could not find DSID value")
-    
+
   print("Starting VPN connection... ", end="", flush=True)
 
   p = subprocess.Popen([ncui],
                        shell=False,
                        cwd=os.path.join(home, "network_connect"),
-                       stdin=subprocess.PIPE, 
+                       stdin=subprocess.PIPE,
                        preexec_fn=os.setsid)
 
   data = "\n".join(["./ncui", "-h", args.host, "-f", der, "-c", "DSID=" + dsid, "-p", password]) + "\n"

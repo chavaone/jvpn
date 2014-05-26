@@ -182,10 +182,11 @@ def main():
 
     print("Session already in progress, overriding... ", end="", flush=True)
 
-    dsid = re.search(r'<input id="DSIDFormDataStr" type="hidden" name="FormDataStr" value="([^"]+)">', data).group(1)
+    dsid = re.search(r' name="FormDataStr" value="([^"]+)"', data).group(1)
+    postfixSID = re.search(r'name="postfixSID" value="([a-fA-F0-9]+)"', data).group(1)
 
     req_data = urllib.parse.urlencode({
-                                   "postfixSID":"ffffffff",
+                                   "postfixSID": postfixSID,
                                    "btnContinue": "Close Selected Sessions and Log in",
                                    "FormDataStr": dsid})
     data = fetch(opener, cookies, base + "login.cgi", req_data)
